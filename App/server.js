@@ -121,11 +121,23 @@ app.get("/post", async (req, res) => {
   res.json(posts);
 });
 
+// Inside the "/post/:id" route handler
 app.get("/post/:id", async (req, res) => {
-  const { id } = req.params;
-  const postDoc = await Post.findById(id);
-  res.json(postDoc);
+  try {
+    const { id } = req.params;
+    const postDoc = await Post.findById(id);
+    
+    if (!postDoc) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+    
+    res.json(postDoc);
+  } catch (e) {
+    res.status(500).json({ error: "Internal server error" });
+    console.log(e);
+  }
 });
+
 
 const port = 3000; // choose a port number
 app.listen(port)
